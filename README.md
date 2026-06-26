@@ -1,10 +1,9 @@
 # Intervion AI
-## Live Link
-- https://intervion-ai.vercel.app
 
 InterviewPrep is a Vite + React + TypeScript interview preparation platform with separate student and admin experiences. Students can move through multi-round mock interview workflows, while admins can manage company workflows, question banks, and review analytics.
 
-The current implementation is frontend-heavy and uses local persisted state for authentication and session progress, with Supabase used for parts of the CMS data flow.
+## Live Link
+- https://intervion-ai-sst.vercel.app/
 
 ## Features
 
@@ -20,15 +19,13 @@ The current implementation is frontend-heavy and uses local persisted state for 
 
 ## Student Flow
 
-Students sign in through a demo auth screen, choose a target company, and progress through the configured rounds for that company. Supported round types are:
+Students sign in through a auth screen, choose a target company, and progress through the configured rounds for that company. Supported round types are:
 
 - `resume`
 - `aptitude`
 - `coding`
 - `gd`
 - `hr`
-
-Round order and configuration are driven from the CMS store in [src/store/useCmsStore.ts](src/store/useCmsStore.ts).
 
 ## Admin Flow
 
@@ -39,8 +36,6 @@ Admins can:
 - Upload aptitude questions from CSV
 - Manage coding questions per company
 - Configure HR interview tone and persona settings
-
-The current admin analytics view uses mock student data, while parts of the CMS read and write aptitude and coding data through Supabase.
 
 ## Tech Stack
 
@@ -111,18 +106,6 @@ VITE_JDOODLE_CLIENT_ID=your_jdoodle_client_id
 VITE_JDOODLE_CLIENT_SECRET=your_jdoodle_client_secret
 ```
 
-Notes:
-
-- Copy from [.env.example](.env.example) when setting up a new environment.
-- [src/lib/supabase.ts](src/lib/supabase.ts) expects `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-- [src/services/geminiService.ts](src/services/geminiService.ts) reads `VITE_GEMINI_API_KEY`.
-- [src/pages/CodingLab.tsx](src/pages/CodingLab.tsx) reads `VITE_GEMINI_API_KEY_CODING`, `VITE_JDOODLE_CLIENT_ID`, and `VITE_JDOODLE_CLIENT_SECRET`.
-- [src/pages/HRInterview.tsx](src/pages/HRInterview.tsx) reads `VITE_GEMINI_API_KEY_HR` and `VITE_GROQ_API_KEY_HR`.
-- [src/pages/GroupDiscussion.tsx](src/pages/GroupDiscussion.tsx) reads `VITE_GROQ_API_KEY_GD`.
-- The app requests camera and microphone access per [metadata.json](metadata.json).
-- Vite only exposes variables prefixed with `VITE_` to browser code.
-- These values are still delivered to the browser at runtime. For production, move Gemini, Groq, and JDoodle calls behind a backend or serverless proxy if the credentials must remain secret.
-
 ### Run Locally
 
 ```bash
@@ -160,34 +143,3 @@ Open the local Vite URL shown in the terminal.
 - `/admin/students`
 - `/admin/cms`
 
-Route protection is handled in [src/App.tsx](src/App.tsx) using the persisted auth store in [src/store/useStore.ts](src/store/useStore.ts).
-
-## Data Model Notes
-
-- Authentication is currently demo-only and persisted in `localStorage`
-- Student session progress is stored in Zustand persistence
-- Company workflows are seeded client-side in the CMS store
-- Aptitude and coding data can be loaded from Supabase in the admin CMS
-
-## Supabase Expectations
-
-The current admin CMS expects tables similar to:
-
-- `aptitude_questions`
-- `coding_questions`
-
-If those tables are missing, the CMS import and fetch flows will not work as intended.
-
-## Current Limitations
-
-- Login and signup are mock flows and do not validate against a real backend
-- Some dashboards and analytics use placeholder data
-- AI and compiler credentials are client-side Vite variables, so they are not suitable for true secret storage in production
-- The `clean` script in `package.json` uses a Unix-style command and may need adjustment on Windows
-
-## Recommended Next Steps
-
-1. Proxy Gemini, Groq, and JDoodle requests through a backend if you need real secret management.
-2. Add a real authentication backend for student and admin access.
-3. Document the exact Supabase schema used by the CMS.
-4. Add automated tests for routing, stores, and round progression.
